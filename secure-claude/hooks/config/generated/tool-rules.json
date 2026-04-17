@@ -76,7 +76,7 @@
     "id": "edit-sensitive-file",
     "pattern": "\\.env$|\\.env\\.|secrets|credentials|\\.ssh/|\\.aws/credentials|\\.npmrc|\\.pypirc",
     "reason": "Blocked edit to sensitive file: {value}",
-    "targetField": "path",
+    "targetField": "file_path",
     "tool": "Edit"
   },
   {
@@ -86,7 +86,7 @@
     "id": "create-system-path",
     "pattern": "^(/etc/|/bin/|/sbin/|/usr/bin/)",
     "reason": "Blocked system file modification: {value}",
-    "targetField": "path",
+    "targetField": "file_path",
     "tool": "Write"
   },
   {
@@ -96,7 +96,7 @@
     "id": "notebook-edit-sensitive-file",
     "pattern": "\\.env$|\\.env\\.|secrets|credentials|\\.ssh/|\\.aws/credentials|\\.npmrc|\\.pypirc",
     "reason": "Blocked notebook edit to sensitive file: {value}",
-    "targetField": "path",
+    "targetField": "notebook_path",
     "tool": "NotebookEdit"
   }
 ]

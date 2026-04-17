@@ -111,7 +111,7 @@ groups:
   edit-path:
     defaults:
       tool: Edit
-      targetField: path
+      targetField: file_path
     rules:
 
       # --- Sensitive / Credential Files ---
@@ -130,7 +130,7 @@ groups:
   write-path:
     defaults:
       tool: Write
-      targetField: path
+      targetField: file_path
     rules:
 
       # --- System Path Protection ---
@@ -150,7 +150,7 @@ groups:
   notebook-edit-path:
     defaults:
       tool: NotebookEdit
-      targetField: path
+      targetField: notebook_path
     rules:
 
       # --- Sensitive / Credential Files ---

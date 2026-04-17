@@ -41,8 +41,8 @@ TOOL_RULE_ALLOWED_FIELDS = {
 TOOL_DEFAULT_ALLOWED_FIELDS = {"tool", "targetField", "action", "caseInsensitive", "enabled"}
 # Claude Code PascalCase tool names
 VALID_TOOLS = {"Bash", "Edit", "Write", "NotebookEdit"}
-# Supported target fields (path covers Edit/Write/NotebookEdit; command covers Bash)
-VALID_TARGET_FIELDS = {"command", "path", "file_path"}
+# Supported target fields (path kept for backwards-compat with local overrides)
+VALID_TARGET_FIELDS = {"command", "path", "file_path", "notebook_path"}
 VALID_ACTIONS = {"deny"}
 
 

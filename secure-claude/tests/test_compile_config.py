@@ -84,6 +84,21 @@ def test_overrides_reject_shipped_id_collision(tmp_path, monkeypatch):
     assert shipped_id.lower() in combined or "collision" in combined or "shipped" in combined
 
 
+def test_tool_rules_target_fields_match_claude_code_schemas():
+    rules = json.loads((GENERATED / "tool-rules.json").read_text())
+    expected = {
+        "Bash": "command",
+        "Edit": "file_path",
+        "Write": "file_path",
+        "NotebookEdit": "notebook_path",
+    }
+    for r in rules:
+        assert r["targetField"] == expected[r["tool"]], (
+            f"rule {r['id']} tool={r['tool']} targetField={r['targetField']} "
+            f"expected {expected[r['tool']]}"
+        )
+
+
 def test_overrides_accept_new_id(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
     override_dir = tmp_path / ".config" / "secure-claude"
