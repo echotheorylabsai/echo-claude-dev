@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "bash \"${PLUGIN_ROOT}/hooks/scripts/bash/log-session-start.sh\"",
+        "powershell": "pwsh -NoProfile -File \"${PLUGIN_ROOT}/hooks/scripts/powershell/log-session-start.ps1\"",
+        "cwd": ".",
+        "env": {
+          "SKIP_GOVERNANCE_AUDIT": "false"
+        },
+        "timeoutSec": 5
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": "bash \"${PLUGIN_ROOT}/hooks/scripts/bash/log-session-end.sh\"",
+        "powershell": "pwsh -NoProfile -File \"${PLUGIN_ROOT}/hooks/scripts/powershell/log-session-end.ps1\"",
+        "cwd": ".",
+        "env": {
+          "SKIP_GOVERNANCE_AUDIT": "false"
+        },
+        "timeoutSec": 5
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "bash": "bash \"${PLUGIN_ROOT}/hooks/scripts/bash/scan-prompt-injection.sh\"",
+        "powershell": "pwsh -NoProfile -File \"${PLUGIN_ROOT}/hooks/scripts/powershell/scan-prompt-injection.ps1\"",
+        "cwd": ".",
+        "env": {
+          "SKIP_GOVERNANCE_AUDIT": "false"
+        },
+        "timeoutSec": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": "bash \"${PLUGIN_ROOT}/hooks/scripts/bash/log-pre-tool-use.sh\"",
+        "powershell": "pwsh -NoProfile -File \"${PLUGIN_ROOT}/hooks/scripts/powershell/log-pre-tool-use.ps1\"",
+        "cwd": ".",
+        "env": {
+          "SKIP_GOVERNANCE_AUDIT": "false"
+        },
+        "timeoutSec": 10
+      },
+      {
+        "type": "command",
+        "bash": "bash \"${PLUGIN_ROOT}/hooks/scripts/bash/gate-pre-tool-use.sh\"",
+        "powershell": "pwsh -NoProfile -File \"${PLUGIN_ROOT}/hooks/scripts/powershell/gate-pre-tool-use.ps1\"",
+        "cwd": ".",
+        "env": {
+          "SKIP_GOVERNANCE_AUDIT": "false"
+        },
+        "timeoutSec": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "bash \"${PLUGIN_ROOT}/hooks/scripts/bash/scan-post-tool-injection.sh\"",
+        "powershell": "pwsh -NoProfile -File \"${PLUGIN_ROOT}/hooks/scripts/powershell/scan-post-tool-injection.ps1\"",
+        "cwd": ".",
+        "env": {
+          "SKIP_GOVERNANCE_AUDIT": "false"
+        },
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

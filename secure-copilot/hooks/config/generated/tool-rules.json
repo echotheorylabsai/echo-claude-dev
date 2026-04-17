@@ -1,0 +1,92 @@
+[
+  {
+    "action": "deny",
+    "caseInsensitive": false,
+    "enabled": true,
+    "id": "bash-destructive-file-ops",
+    "pattern": "\\brm\\s+(-rf|--recursive|--force)|\\bdd\\s+(if|of)=|\\bmkfs\\.|\\bsudo\\s+rm",
+    "reason": "Blocked dangerous command: destructive file operations detected",
+    "targetField": "command",
+    "tool": "bash"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": false,
+    "enabled": true,
+    "id": "bash-protected-file-deletion",
+    "pattern": "\\b(rm|del|unlink)\\b.*(\\.env([[:alnum:]_.-]*)?([[:space:]\"']|$)|\\.git(/|[[:space:]\"']|$))",
+    "reason": "Blocked dangerous command: protected file deletion detected",
+    "targetField": "command",
+    "tool": "bash"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": true,
+    "enabled": true,
+    "id": "bash-destructive-git-operation",
+    "pattern": "git\\s+push\\s+(--force|-f)\\b.*\\b(main|master)\\b|git\\s+reset\\s+--hard\\b|git\\s+clean\\s+-fd\\b",
+    "reason": "Blocked dangerous command: destructive git operation detected",
+    "targetField": "command",
+    "tool": "bash"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": true,
+    "enabled": true,
+    "id": "bash-destructive-database-operation",
+    "pattern": "DROP\\s+TABLE\\b|DROP\\s+DATABASE\\b|TRUNCATE\\b|DELETE\\s+FROM\\s+[A-Za-z_][A-Za-z0-9_]*\\s*;",
+    "reason": "Blocked dangerous command: destructive database operation detected",
+    "targetField": "command",
+    "tool": "bash"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": false,
+    "enabled": true,
+    "id": "bash-fork-bomb",
+    "pattern": ":\\(\\)\\s*\\{\\s*:\\s*\\|\\s*:\\s*&\\s*\\}\\s*;",
+    "reason": "Blocked dangerous command: fork bomb detected",
+    "targetField": "command",
+    "tool": "bash"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": true,
+    "enabled": true,
+    "id": "bash-remote-script-pipe",
+    "pattern": "curl.*\\|.*\\b(bash|sh)\\b|wget.*\\|.*\\b(bash|sh)\\b",
+    "reason": "Blocked dangerous command: remote script pipe detected",
+    "targetField": "command",
+    "tool": "bash"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": false,
+    "enabled": true,
+    "id": "bash-network-exposure",
+    "pattern": "nc\\s+-l|python.*-m\\s+http\\.server|php\\s+-S|ruby.*-run.*httpd",
+    "reason": "Blocked network exposure command: requires manual approval",
+    "targetField": "command",
+    "tool": "bash"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": false,
+    "enabled": true,
+    "id": "edit-sensitive-file",
+    "pattern": "\\.env$|\\.env\\.|secrets|credentials|\\.ssh/|\\.aws/credentials|\\.npmrc|\\.pypirc",
+    "reason": "Blocked edit to sensitive file: {value}",
+    "targetField": "path",
+    "tool": "edit"
+  },
+  {
+    "action": "deny",
+    "caseInsensitive": false,
+    "enabled": true,
+    "id": "create-system-path",
+    "pattern": "^(/etc/|/bin/|/sbin/|/usr/bin/)",
+    "reason": "Blocked system file modification: {value}",
+    "targetField": "path",
+    "tool": "create"
+  }
+]

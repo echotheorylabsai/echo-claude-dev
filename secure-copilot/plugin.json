@@ -1,0 +1,12 @@
+{
+  "name": "secure-copilot",
+  "description": "Governance hooks for Copilot sessions — log lifecycle events, scan prompts for threat signals, and gate dangerous tool use.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Shubh Shukla"
+  },
+  "license": "MIT",
+  "category": "security",
+  "keywords": ["security", "secure-copilot", "hooks", "guardrails", "governance", "audit"],
+  "hooks": "hooks/hooks.json"
+}
