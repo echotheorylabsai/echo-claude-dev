@@ -12,6 +12,8 @@ def read_stdin_json() -> dict:
     Returns {} for empty/whitespace input or TTY.
     Returns {"_raw": <text>} for non-dict or invalid JSON.
     """
+    # Guard against blocking on stdin.read() when invoked manually in a terminal.
+    # In production Claude Code always pipes stdin, so this branch is a dev-only safety net.
     if sys.stdin.isatty():
         return {}
     raw = sys.stdin.read()
@@ -32,7 +34,13 @@ def write_stdout_json(obj: dict) -> None:
 
 
 def append_jsonl(path: Path, record: dict) -> None:
-    """Append one JSON record as a line to a JSONL file, creating parent dirs."""
+    """Append one JSON record as a line to `path`, creating parent dirs.
+
+    Sequential-only: hooks for a single Claude Code session fire serially, so this
+    suffices. If multiple sessions on the same project share a log file,
+    concurrent writes may interleave — we accept that for simplicity; Claude Code
+    hooks don't run in parallel within a session.
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as fh:

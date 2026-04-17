@@ -32,7 +32,7 @@ def test_write_stdout_json(capsys):
     assert json.loads(out) == {"ok": True}
 
 
-def test_append_jsonl_atomic(tmp_path):
+def test_append_jsonl_sequential_appends_preserve_order(tmp_path):
     lf = tmp_path / "audit.jsonl"
     io_utils.append_jsonl(lf, {"event": "a"})
     io_utils.append_jsonl(lf, {"event": "b"})
@@ -54,7 +54,11 @@ def test_append_jsonl_preserves_non_ascii(tmp_path):
 
 
 def test_utc_timestamp_iso8601_z():
+    from datetime import datetime
+
     ts = io_utils.utc_timestamp()
     assert ts.endswith("Z")
-    assert "T" in ts
-    assert len(ts) == 20  # YYYY-MM-DDTHH:MM:SSZ
+    # Must be parseable as an ISO 8601 UTC datetime
+    parsed = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+    assert parsed.tzinfo is not None
+    assert parsed.utcoffset().total_seconds() == 0
