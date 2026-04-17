@@ -7,6 +7,11 @@ import subprocess
 from pathlib import Path
 
 
+def _home() -> Path:
+    raw = os.environ.get("HOME") or ""
+    return Path(raw) if raw else Path.home()
+
+
 def plugin_root() -> Path:
     env = os.environ.get("CLAUDE_PLUGIN_ROOT")
     if env:
@@ -32,8 +37,7 @@ def project_name(cwd: str) -> str:
 
 
 def log_dir(cwd: str) -> Path:
-    home = Path(os.environ.get("HOME", os.path.expanduser("~")))
-    return home / "progress-ai" / "secure-claude" / "logs" / project_name(cwd)
+    return _home() / "progress-ai" / "secure-claude" / "logs" / project_name(cwd)
 
 
 def log_file(cwd: str) -> Path:
@@ -41,8 +45,7 @@ def log_file(cwd: str) -> Path:
 
 
 def local_override_dir() -> Path:
-    home = Path(os.environ.get("HOME", os.path.expanduser("~")))
-    return home / ".config" / "secure-claude"
+    return _home() / ".config" / "secure-claude"
 
 
 def shipped_prompt_threats_json(root: Path) -> Path:
