@@ -1,0 +1,9 @@
+{
+  "name": "secure-claude",
+  "description": "Governance hooks for Claude Code sessions — log lifecycle events, scan prompts for threat signals, and gate dangerous tool use.",
+  "version": "1.0.0",
+  "author": { "name": "Echo Theory Labs" },
+  "license": "MIT",
+  "keywords": ["security", "secure-claude", "hooks", "guardrails", "governance", "audit"],
+  "hooks": "./hooks/hooks.json"
+}
