@@ -19,5 +19,5 @@ def test_marketplace_manifest_fields():
     assert mkt["owner"]["name"]
     assert any(p["name"] == "secure-claude" for p in mkt["plugins"])
     entry = next(p for p in mkt["plugins"] if p["name"] == "secure-claude")
-    assert entry["source"] == "."
+    assert entry["source"] == "./"
     assert entry["category"] == "security"

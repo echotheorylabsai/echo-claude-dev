@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "secure-claude",
-      "source": ".",
+      "source": "./",
       "description": "Governance, audit, and tool-gating hooks for Claude Code",
       "version": "1.0.0",
       "author": { "name": "Echo Theory Labs" },
