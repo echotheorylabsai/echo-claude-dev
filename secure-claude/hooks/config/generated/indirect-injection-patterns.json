@@ -1,0 +1,182 @@
+[
+  {
+    "caseInsensitive": true,
+    "category": "instruction_override",
+    "description": "Ignore previous instructions",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-instruction-override",
+    "pattern": "(?i)\\bignore\\s+(all\\s+)?(previous|prior|above)\\s+(instructions?|prompts?|rules?)",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "instruction_override",
+    "description": "New system prompt injection",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-system-prompt-injection",
+    "pattern": "(?i)\\b(new|updated|revised|real)\\s+system\\s+prompt\\b",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "instruction_override",
+    "description": "Fake system message markers",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-fake-system-markers",
+    "pattern": "(?i)\\[/?system\\]|\\{/?system\\}|</?system\\s*>",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "instruction_override",
+    "description": "Fake delimiter markers",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-fake-delimiters",
+    "pattern": "(?i)={3,}\\s*(end|new|begin|start)\\s*(of\\s+)?(prompt|instructions?|system)",
+    "severity": 0.7
+  },
+  {
+    "caseInsensitive": true,
+    "category": "role_playing_dan",
+    "description": "DAN jailbreak attempt",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-dan-jailbreak",
+    "pattern": "(?i)\\byou\\s+are\\s+(now\\s+)?DAN\\b",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "role_playing_dan",
+    "description": "Restriction/safety bypass",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-restriction-bypass",
+    "pattern": "(?i)\\b(without|ignore|bypass|disable|remove)\\s+(your\\s+)?(restrictions?|filters?|safeguards?|guardrails?)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "role_playing_dan",
+    "description": "Fake developer mode activation",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-developer-mode",
+    "pattern": "(?i)\\bDEVELOPER\\s+MODE\\s+(ENABLED|ACTIVATED|ON)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "role_playing_dan",
+    "description": "Evil/unrestricted persona switch",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-evil-twin",
+    "pattern": "(?i)\\b(evil|shadow|dark|unrestricted|uncensored)\\s+(twin|version|mode|side|alter\\s*ego)\\b",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Zero-width/invisible Unicode",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-zero-width-chars",
+    "pattern": "[\\x{200B}\\x{200C}\\x{200D}\\x{FEFF}\\x{00AD}]{2,}",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Unicode whitespace manipulation",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-unicode-whitespace",
+    "pattern": "[\\x{2060}\\x{180E}\\x{2000}-\\x{200F}]{3,}",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Cyrillic homoglyphs",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-cyrillic-homoglyphs",
+    "pattern": "[\\x{0430}\\x{0435}\\x{043E}\\x{0440}\\x{0441}\\x{0443}\\x{0445}\\x{0456}]{3,}",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Base64 decode and execute",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-base64-execute",
+    "pattern": "(?i)\\b(execute|follow|run)\\s+(the\\s+)?decoded\\s+(base64|content|string)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Hex escape sequences",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-hex-sequences",
+    "pattern": "\\\\x[0-9a-fA-F]{2}(\\\\x[0-9a-fA-F]{2}){5,}",
+    "severity": 0.7
+  },
+  {
+    "caseInsensitive": true,
+    "category": "context_manipulation",
+    "description": "Instructions in HTML comments",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-html-comment-injection",
+    "pattern": "<!--\\s*(ignore|disregard|override|system|instruction|prompt|forget)",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "context_manipulation",
+    "description": "Instructions in code comments",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-code-comment-injection",
+    "pattern": "/\\*\\s*(ignore|disregard|override|system|instruction|prompt|forget)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "context_manipulation",
+    "description": "Fake system role JSON",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-fake-system-json",
+    "pattern": "(?i)\\{\"role\"\\s*:\\s*\"system\"",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "context_manipulation",
+    "description": "False AI company authority",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-false-authority",
+    "pattern": "(?i)\\b(anthropic|openai|github|copilot\\s*team)\\s+(says?|requires?|demands?|orders?|instructs?)\\b",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "context_manipulation",
+    "description": "Fake instruction block markers",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "indirect-fake-inst-markers",
+    "pattern": "\\[INST\\]|\\[/INST\\]|\\[SYS\\]|\\[/SYS\\]",
+    "severity": 0.9
+  }
+]

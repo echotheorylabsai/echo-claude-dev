@@ -1,0 +1,184 @@
+[
+  {
+    "caseInsensitive": true,
+    "category": "data_exfiltration",
+    "description": "Bulk data transfer",
+    "enabled": true,
+    "id": "data-exfiltration-bulk-send",
+    "pattern": "send[[:space:]]+(all|every|entire)[[:space:]].*(data|records|files|credentials|secrets)[[:space:]]+to[[:space:]]+",
+    "severity": 0.85
+  },
+  {
+    "caseInsensitive": true,
+    "category": "data_exfiltration",
+    "description": "Explicit exfiltration intent",
+    "enabled": true,
+    "id": "data-exfiltration-explicit-exfiltration",
+    "pattern": "(exfiltrat(e|ion)|leak|dump)[[:space:]].*(data|records|credentials|secrets)",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "data_exfiltration",
+    "description": "External export",
+    "enabled": true,
+    "id": "data-exfiltration-external-export",
+    "pattern": "export[[:space:]].*[[:space:]]+to[[:space:]]+(external|outside|third[_-]?party)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "data_exfiltration",
+    "description": "HTTP POST with data",
+    "enabled": true,
+    "id": "data-exfiltration-http-post",
+    "pattern": "curl[[:space:]].*[[:space:]]+-d[[:space:]]+",
+    "severity": 0.7
+  },
+  {
+    "caseInsensitive": true,
+    "category": "data_exfiltration",
+    "description": "Sensitive upload",
+    "enabled": true,
+    "id": "data-exfiltration-sensitive-upload",
+    "pattern": "upload[[:space:]].*[[:space:]]+(credentials|secrets|keys|user[[:space:]]+data|database)",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "privilege_escalation",
+    "description": "Elevated privileges",
+    "enabled": true,
+    "id": "privilege-escalation-elevated-privileges",
+    "pattern": "(sudo|as[[:space:]]+root|admin[[:space:]]+access|runas[[:space:]]+/user)",
+    "severity": 0.8
+  },
+  {
+    "caseInsensitive": true,
+    "category": "privilege_escalation",
+    "description": "World-writable permissions",
+    "enabled": true,
+    "id": "privilege-escalation-world-writable",
+    "pattern": "chmod[[:space:]]+777",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "privilege_escalation",
+    "description": "Adding admin access",
+    "enabled": true,
+    "id": "privilege-escalation-admin-access",
+    "pattern": "add[[:space:]]+.*[[:space:]]+(sudoers|administrators)",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "system_destruction",
+    "description": "Destructive command",
+    "enabled": true,
+    "id": "system-destruction-destructive-command",
+    "pattern": "(rm[[:space:]]+-rf[[:space:]]+/|del[[:space:]]+/[sq]|format[[:space:]]+c:)",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "system_destruction",
+    "description": "Database destruction",
+    "enabled": true,
+    "id": "system-destruction-database-destruction",
+    "pattern": "(drop[[:space:]]+database|truncate[[:space:]]+table|delete[[:space:]]+from[[:space:]]+[[:alnum:]_]+[[:space:]]*(;|[[:space:]]*$))",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "system_destruction",
+    "description": "Mass deletion",
+    "enabled": true,
+    "id": "system-destruction-mass-deletion",
+    "pattern": "wipe[[:space:]]+(all|entire|every)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "prompt_injection",
+    "description": "Instruction override",
+    "enabled": true,
+    "id": "prompt-injection-instruction-override",
+    "pattern": "ignore[[:space:]]+(previous|above|all)[[:space:]]+(instructions?|rules?|prompts?)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "prompt_injection",
+    "description": "Role reassignment",
+    "enabled": true,
+    "id": "prompt-injection-role-reassignment",
+    "pattern": "you[[:space:]]+are[[:space:]]+now[[:space:]]+(a|an)[[:space:]]+(assistant|ai|bot|system|expert|language[[:space:]]+model)",
+    "severity": 0.7
+  },
+  {
+    "caseInsensitive": true,
+    "category": "prompt_injection",
+    "description": "System prompt injection",
+    "enabled": true,
+    "id": "prompt-injection-system-prefix",
+    "pattern": "(^|[[:space:]])system[[:space:]]*:[[:space:]]*you[[:space:]]+are",
+    "severity": 0.6
+  },
+  {
+    "caseInsensitive": true,
+    "category": "credential_exposure",
+    "description": "Possible hardcoded credential",
+    "enabled": true,
+    "id": "credential-exposure-hardcoded-credential",
+    "pattern": "(api[_-]?key|secret[_-]?key|password|token)[[:space:]]*[:=][[:space:]]*['\"]?[[:alnum:]_]{8,}",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "credential_exposure",
+    "description": "AWS key exposure",
+    "enabled": true,
+    "id": "credential-exposure-aws-key",
+    "pattern": "(aws_access_key|AKIA[0-9A-Z]{16})",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Zero-width/invisible Unicode",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "encoding-zero-width-chars",
+    "pattern": "[\\x{200B}\\x{200C}\\x{200D}\\x{FEFF}\\x{00AD}]{2,}",
+    "severity": 0.95
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Cyrillic homoglyphs",
+    "enabled": true,
+    "engine": "pcre",
+    "id": "encoding-cyrillic-homoglyphs",
+    "pattern": "[\\x{0430}\\x{0435}\\x{043E}\\x{0440}\\x{0441}\\x{0443}\\x{0445}\\x{0456}]{3,}",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Base64 decode and execute",
+    "enabled": true,
+    "id": "encoding-base64-execute",
+    "pattern": "(execute|follow|run)[[:space:]]+(the[[:space:]]+)?decoded[[:space:]]+(base64|content|string)",
+    "severity": 0.9
+  },
+  {
+    "caseInsensitive": true,
+    "category": "encoding_obfuscation",
+    "description": "Hex escape sequences",
+    "enabled": true,
+    "id": "encoding-hex-sequences",
+    "pattern": "\\\\x[0-9a-fA-F]{2}(\\\\x[0-9a-fA-F]{2}){5,}",
+    "severity": 0.85
+  }
+]
