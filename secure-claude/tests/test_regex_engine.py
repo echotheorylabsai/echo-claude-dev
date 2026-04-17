@@ -26,9 +26,7 @@ def test_posix_translates_alnum_digit_alpha_classes():
 
 def test_posix_translates_class_inside_character_set():
     # [[:space:]] must work when wrapped in an outer [ ... ]
-    r = regex_engine.compile_rule(
-        pattern=r"[[:space:]abc]", engine="posix", case_insensitive=False
-    )
+    r = regex_engine.compile_rule(pattern=r"[[:space:]abc]", engine="posix", case_insensitive=False)
     assert r.search(" ")
     assert r.search("a")
 
@@ -57,9 +55,7 @@ def test_compile_unknown_engine_raises():
 
 def test_compile_unknown_posix_class_raises():
     with pytest.raises(regex_engine.CompileError):
-        regex_engine.compile_rule(
-            pattern=r"[[:unknown:]]", engine="posix", case_insensitive=False
-        )
+        regex_engine.compile_rule(pattern=r"[[:unknown:]]", engine="posix", case_insensitive=False)
 
 
 def test_default_engine_is_posix():
