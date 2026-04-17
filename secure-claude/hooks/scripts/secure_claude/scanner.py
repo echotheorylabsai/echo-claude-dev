@@ -71,7 +71,7 @@ def scan_text(*, text: str, rules: list[dict]) -> list[Threat]:
             threats.append(
                 Threat(
                     category=rule["category"],
-                    severity=rule["severity"],
+                    severity=float(rule.get("severity", 0.5)),
                     description=rule["description"],
                     evidence=match.group(0)[:200],
                 )

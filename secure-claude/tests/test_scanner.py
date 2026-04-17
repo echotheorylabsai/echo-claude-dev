@@ -129,3 +129,34 @@ def test_evidence_truncated_at_200_chars():
     t = scanner.scan_text(text=long_text, rules=rules)
     assert len(t) == 1
     assert len(t[0].evidence) <= 200
+
+
+def test_severity_coerced_to_float():
+    rules = [
+        {
+            "id": "r",
+            "category": "c",
+            "description": "d",
+            "pattern": "match",
+            "severity": 1,  # int, not float
+            "engine": "posix",
+        }
+    ]
+    t = scanner.scan_text(text="match", rules=rules)
+    assert len(t) == 1
+    assert isinstance(t[0].severity, float)
+    assert t[0].severity == 1.0
+
+
+def test_missing_severity_defaults_to_point_five():
+    rules = [
+        {
+            "id": "r",
+            "category": "c",
+            "description": "d",
+            "pattern": "match",
+            "engine": "posix",
+        }
+    ]
+    t = scanner.scan_text(text="match", rules=rules)
+    assert t[0].severity == 0.5
