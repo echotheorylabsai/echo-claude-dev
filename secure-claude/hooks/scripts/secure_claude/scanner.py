@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 
-from .regex_engine import CompileError, compile_rule
+from .regex_engine import compile_rule
 
 __all__ = ["Threat", "max_severity", "scan_text", "threats_to_json"]
 
@@ -59,7 +59,7 @@ def scan_text(*, text: str, rules: list[dict]) -> list[Threat]:
                 engine=rule.get("engine"),
                 case_insensitive=bool(rule.get("caseInsensitive", False)),
             )
-        except (CompileError, Exception) as exc:
+        except Exception as exc:
             print(
                 f"[secure-claude] skipped bad rule {rule_id}: {exc}",
                 file=sys.stderr,

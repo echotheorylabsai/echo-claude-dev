@@ -4,13 +4,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import subprocess
 import sys
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from secure_claude.regex_engine import CompileError, compile_rule
 
 
 class ConfigError(Exception):
@@ -120,29 +122,16 @@ def ensure_unknown_keys_absent(mapping: dict[str, Any], allowed: set[str], label
         raise ConfigError(f"{label}: unknown field(s): {', '.join(unknown_keys)}")
 
 
-def validate_regex(pattern: str, label: str, engine: str = "posix") -> None:
-    if engine == "pcre":
-        result = subprocess.run(
-            ["perl", "-e", "my $p = <STDIN>; chomp $p; qr/$p/"],
-            input=pattern + "\n",
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            stderr = result.stderr.strip() or "perl rejected the PCRE pattern"
-            raise ConfigError(f"{label}: invalid PCRE pattern {pattern!r}: {stderr}")
-        return
-
-    result = subprocess.run(
-        ["grep", "-E", "--", pattern, "/dev/null"],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode == 2:
-        stderr = result.stderr.strip() or "grep -E rejected the pattern"
-        raise ConfigError(f"{label}: invalid grep -E pattern {pattern!r}: {stderr}")
+def validate_regex(
+    pattern: str,
+    label: str,
+    engine: str = "posix",
+    case_insensitive: bool = False,
+) -> None:
+    try:
+        compile_rule(pattern=pattern, engine=engine, case_insensitive=case_insensitive)
+    except CompileError as exc:
+        raise ConfigError(f"{label}: invalid {engine} pattern {pattern!r}: {exc}") from exc
 
 
 def require_string(value: Any, label: str) -> str:
@@ -238,7 +227,12 @@ def normalize_prompt_rule(rule: dict[str, Any], label: str) -> dict[str, Any]:
     }
     if engine != "posix":
         normalized["engine"] = engine
-    validate_regex(normalized["pattern"], label, engine=engine)
+    validate_regex(
+        normalized["pattern"],
+        label,
+        engine=engine,
+        case_insensitive=normalized["caseInsensitive"],
+    )
     return normalized
 
 
@@ -265,7 +259,11 @@ def normalize_tool_rule(rule: dict[str, Any], label: str) -> dict[str, Any]:
         "caseInsensitive": require_bool(rule.get("caseInsensitive"), f"{label}.caseInsensitive"),
         "enabled": require_bool(rule.get("enabled"), f"{label}.enabled"),
     }
-    validate_regex(normalized["pattern"], label)
+    validate_regex(
+        normalized["pattern"],
+        label,
+        case_insensitive=normalized["caseInsensitive"],
+    )
     return normalized
 
 

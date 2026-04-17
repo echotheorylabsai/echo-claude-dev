@@ -4,6 +4,9 @@ import re
 
 __all__ = ["CompileError", "compile_rule"]
 
+# Matches PCRE-style \x{NNNN} Unicode escape sequences (1-6 hex digits).
+_PCRE_UNICODE_ESCAPE_RE = re.compile(r"\\x\{([0-9A-Fa-f]{1,6})\}")
+
 # Mapping of POSIX character class names to their Python re equivalent bodies.
 _POSIX_CLASS_MAP: dict[str, str] = {
     "alnum": r"A-Za-z0-9",
@@ -81,8 +84,9 @@ def compile_rule(
 
     if engine == "pcre":
         try:
-            return re.compile(pattern, flags)
-        except re.error as exc:
+            translated = _PCRE_UNICODE_ESCAPE_RE.sub(lambda m: chr(int(m.group(1), 16)), pattern)
+            return re.compile(translated, flags)
+        except (re.error, ValueError) as exc:
             raise CompileError(str(exc)) from exc
 
     raise CompileError(f"unknown engine {engine!r}; expected 'posix' or 'pcre'")

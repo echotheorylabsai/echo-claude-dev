@@ -120,7 +120,7 @@ Fires on `Bash`, `Edit`, `Write`, `NotebookEdit`. Nine deny-rule groups:
 | `bash-remote-script-pipe` | `curl … \| bash`, `wget … \| sh` |
 | `bash-network-exposure` | `nc -l`, `python -m http.server`, `php -S`, `ruby -run -e httpd` |
 | `edit-sensitive-file` | Paths matching `.env`, `secrets`, `credentials`, `.ssh/`, `.aws/`, `.npmrc` |
-| `write-system-path` | Paths under `/etc/`, `/bin/`, `/sbin/`, `/usr/bin/` |
+| `create-system-path` | Paths under `/etc/`, `/bin/`, `/sbin/`, `/usr/bin/` |
 
 ### Indirect injection scanning — `scan_post_tool_injection.py`
 
@@ -171,7 +171,7 @@ cd secure-claude
 uv run python hooks/scripts/compile_config.py --mode shipped
 
 # Compile optional local overrides
-uv run python hooks/scripts/compile_config.py --mode local
+uv run python hooks/scripts/compile_config.py --mode overrides
 
 # Verify generated JSON is up to date (fails if stale)
 uv run python hooks/scripts/compile_config.py --mode shipped --check
