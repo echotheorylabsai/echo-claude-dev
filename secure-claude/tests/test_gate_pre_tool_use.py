@@ -216,6 +216,9 @@ def test_skip_flag_bypasses_gate(tmp_path):
     )
     assert r.returncode == 0
     assert r.stdout.strip() == ""  # no deny JSON
+    # Skip must bypass logging entirely — no log file created
+    lf = tmp_path / "progress-ai/secure-claude/logs" / tmp_path.name / "governance-audit.jsonl"
+    assert not lf.exists()
 
 
 def test_unknown_tool_allows(tmp_path):
@@ -241,5 +244,31 @@ def test_deny_reason_interpolates_value_placeholder(tmp_path):
         tmp_path,
     )
     reason = _deny_json(r)["hookSpecificOutput"]["permissionDecisionReason"]
-    # Either the literal path should appear, OR the {value} placeholder should be gone
-    assert ".env.prod" in reason or "{value}" not in reason
+    assert ".env.prod" in reason
+    assert "{value}" not in reason
+
+
+def test_non_deny_action_rule_does_not_block(tmp_path):
+    # Future-proof: a rule with action other than "deny" must not trigger enforcement.
+    # We install a local override with action: "audit" that would otherwise match `echo safe`.
+    local_dir = tmp_path / ".config" / "secure-claude" / "generated"
+    local_dir.mkdir(parents=True)
+    override_rules = [
+        {
+            "id": "custom-audit-only",
+            "action": "audit",
+            "tool": "Bash",
+            "targetField": "command",
+            "pattern": "echo safe",
+            "reason": "this rule should not fire",
+            "caseInsensitive": False,
+            "enabled": True,
+        }
+    ]
+    (local_dir / "tool-rules.json").write_text(json.dumps(override_rules))
+    r = _run(
+        _pre_tool_use(tool_name="Bash", cwd=str(tmp_path), tool_input={"command": "echo safe"}),
+        tmp_path,
+    )
+    assert r.returncode == 0
+    assert r.stdout.strip() == ""  # must not deny — action is not "deny"

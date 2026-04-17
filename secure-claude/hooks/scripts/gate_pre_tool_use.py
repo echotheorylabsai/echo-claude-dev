@@ -34,6 +34,8 @@ def _evaluate(tool_name: str, tool_input: dict, rules: list[dict]) -> tuple[dict
     for rule in rules:
         if not rule.get("enabled", True):
             continue
+        if rule.get("action", "deny") != "deny":
+            continue
         if rule.get("tool") != tool_name:
             continue
         target_field = rule.get("targetField", "command")
@@ -91,7 +93,7 @@ def main() -> int:
         _emit_deny(reason)
         return 0
 
-    _match, reason = _evaluate(ev.tool_name, ev.tool_input, rules)
+    _, reason = _evaluate(ev.tool_name, ev.tool_input, rules)
     if reason:
         logging_utils.audit_log(
             lf,
