@@ -1,5 +1,5 @@
 # =============================================================================
-# Secure Copilot — Indirect Injection Pattern Configuration
+# Secure Claude — Indirect Injection Pattern Configuration
 # =============================================================================
 # Detects malicious patterns embedded in tool outputs (files, web pages, MCP
 # server responses, command outputs) that attempt to override agent instructions.
@@ -30,7 +30,7 @@
 # ADDING A NEW RULE:
 #   1. Choose the appropriate category
 #   2. Add a rule with: id, description, pattern (and optionally severity)
-#   3. Run the compiler:  python3 hooks/scripts/compile-config.py --mode shipped
+#   3. Run the compiler:  uv run python hooks/scripts/compile_config.py --mode shipped
 # =============================================================================
 
 

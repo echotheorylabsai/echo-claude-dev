@@ -1,5 +1,5 @@
 # =============================================================================
-# Secure Copilot — Prompt Injection Pattern Configuration
+# Secure Claude — Prompt Injection Pattern Configuration
 # =============================================================================
 # Detects malicious or suspicious patterns in user prompts before they are
 # processed by the AI agent.  Each category groups related threat patterns
