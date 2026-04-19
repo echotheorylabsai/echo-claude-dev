@@ -1,0 +1,30 @@
+[project]
+name = "secure-claude"
+version = "1.0.0"
+description = "Governance hooks for Claude Code sessions"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["hooks/scripts", "scripts", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["hooks/scripts"]

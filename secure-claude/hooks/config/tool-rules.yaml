@@ -1,0 +1,160 @@
+# =============================================================================
+# Secure Claude — Tool Rules Configuration
+# =============================================================================
+# Defines deny-by-default rules that block dangerous tool invocations before
+# they reach the shell, editor, or file system.
+#
+# Each rule group targets a specific tool + field combination and contains one
+# or more regex patterns.  When a pattern matches the field value, the action
+# (default: deny) is applied and the reason is surfaced to the user.
+#
+# STRUCTURE:
+#   groups.<name>.defaults   — tool name and target field for the group
+#   groups.<name>.rules[]    — individual deny rules
+#     id            — unique rule identifier
+#     pattern       — regex (PCRE-like) matched against the target field
+#     reason        — human-readable block message ({value} is interpolated)
+#     caseInsensitive — override the global default for this rule (optional)
+#
+# PATTERN SYNTAX:
+#   - \b  = word boundary
+#   - \s  = whitespace,  \s+ = one or more whitespace
+#   - (a|b) = alternation
+#   - [[:space:]] = POSIX whitespace class (used in some patterns)
+#
+# ADDING A NEW RULE:
+#   1. Choose the appropriate group (bash-command, edit-path, write-path, notebook-edit-path)
+#   2. Add a rule with: id, reason, pattern (and optionally caseInsensitive)
+#   3. Run the compiler:  python3 hooks/scripts/compile_config.py --mode shipped
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Global Defaults
+# -----------------------------------------------------------------------------
+# action: deny          — block matching invocations (only supported action)
+# enabled: true         — all rules active unless individually toggled
+# caseInsensitive: false — patterns are case-sensitive by default
+# -----------------------------------------------------------------------------
+defaults:
+  action: deny
+  enabled: true
+  caseInsensitive: false
+
+
+groups:
+
+  # ===========================================================================
+  # BASH COMMAND RULES
+  # ===========================================================================
+  # Intercepts the `command` field of bash/shell tool invocations.
+  # Covers destructive file ops, git operations, database commands, fork bombs,
+  # remote script piping, and network exposure.
+  # ===========================================================================
+  bash-command:
+    defaults:
+      tool: Bash
+      targetField: command
+    rules:
+
+      # --- Destructive File Operations ---
+
+      - id: bash-destructive-file-ops
+        reason: 'Blocked dangerous command: destructive file operations detected'
+        pattern: '\brm\s+(-rf|--recursive|--force)|\bdd\s+(if|of)=|\bmkfs\.|\bsudo\s+rm'
+
+      - id: bash-protected-file-deletion
+        reason: 'Blocked dangerous command: protected file deletion detected'
+        pattern: >-
+          \b(rm|del|unlink)\b.*(\.env([[:alnum:]_.-]*)?([[:space:]"']|$)|\.git(/|[[:space:]"']|$))
+
+      # --- Destructive Git Operations ---
+
+      - id: bash-destructive-git-operation
+        caseInsensitive: true
+        reason: 'Blocked dangerous command: destructive git operation detected'
+        pattern: 'git\s+push\s+(--force|-f)\b.*\b(main|master)\b|git\s+reset\s+--hard\b|git\s+clean\s+-fd\b'
+
+      # --- Destructive Database Operations ---
+
+      - id: bash-destructive-database-operation
+        caseInsensitive: true
+        reason: 'Blocked dangerous command: destructive database operation detected'
+        pattern: 'DROP\s+TABLE\b|DROP\s+DATABASE\b|TRUNCATE\b|DELETE\s+FROM\s+[A-Za-z_][A-Za-z0-9_]*\s*;'
+
+      # --- Fork Bomb Detection ---
+
+      - id: bash-fork-bomb
+        reason: 'Blocked dangerous command: fork bomb detected'
+        pattern: ':\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;'
+
+      # --- Remote Script Piping ---
+
+      - id: bash-remote-script-pipe
+        caseInsensitive: true
+        reason: 'Blocked dangerous command: remote script pipe detected'
+        pattern: 'curl.*\|.*\b(bash|sh)\b|wget.*\|.*\b(bash|sh)\b'
+
+      # --- Network Exposure ---
+
+      - id: bash-network-exposure
+        reason: 'Blocked network exposure command: requires manual approval'
+        pattern: 'nc\s+-l|python.*-m\s+http\.server|php\s+-S|ruby.*-run.*httpd'
+
+
+  # ===========================================================================
+  # EDIT PATH RULES
+  # ===========================================================================
+  # Intercepts the `path` field of editor/edit tool invocations.
+  # Prevents modifications to sensitive configuration and credential files.
+  # ===========================================================================
+  edit-path:
+    defaults:
+      tool: Edit
+      targetField: file_path
+    rules:
+
+      # --- Sensitive / Credential Files ---
+
+      - id: edit-sensitive-file
+        reason: 'Blocked edit to sensitive file: {value}'
+        pattern: '\.env$|\.env\.|secrets|credentials|\.ssh/|\.aws/credentials|\.npmrc|\.pypirc'
+
+
+  # ===========================================================================
+  # WRITE PATH RULES
+  # ===========================================================================
+  # Intercepts the `path` field of file-write/create tool invocations.
+  # Blocks creation of files in protected system directories.
+  # ===========================================================================
+  write-path:
+    defaults:
+      tool: Write
+      targetField: file_path
+    rules:
+
+      # --- System Path Protection ---
+
+      - id: create-system-path
+        reason: 'Blocked system file modification: {value}'
+        pattern: '^(/etc/|/bin/|/sbin/|/usr/bin/)'
+
+
+  # ===========================================================================
+  # NOTEBOOK EDIT PATH RULES
+  # ===========================================================================
+  # Intercepts the `file_path` field of notebook-edit tool invocations.
+  # Prevents modifications to sensitive configuration and credential files
+  # via notebook editing tools.
+  # ===========================================================================
+  notebook-edit-path:
+    defaults:
+      tool: NotebookEdit
+      targetField: notebook_path
+    rules:
+
+      # --- Sensitive / Credential Files ---
+
+      - id: notebook-edit-sensitive-file
+        reason: 'Blocked notebook edit to sensitive file: {value}'
+        pattern: '\.env$|\.env\.|secrets|credentials|\.ssh/|\.aws/credentials|\.npmrc|\.pypirc'

@@ -1,0 +1,216 @@
+# =============================================================================
+# Secure Claude — Indirect Injection Pattern Configuration
+# =============================================================================
+# Detects malicious patterns embedded in tool outputs (files, web pages, MCP
+# server responses, command outputs) that attempt to override agent instructions.
+# These patterns are evaluated by the postToolUse hook after every tool execution.
+#
+# STRUCTURE:
+#   categories.<name>.defaults   — default severity for the category
+#   categories.<name>.rules[]    — individual detection rules
+#     id          — unique rule identifier
+#     description — short human-readable label
+#     pattern     — PCRE regex matched against tool output text
+#     severity    — threat score 0.0–1.0 (optional; overrides category default)
+#
+# PATTERN SYNTAX:
+#   All patterns use the PCRE engine (matched via perl) for full Unicode support.
+#   - (?i)        = case-insensitive flag (inline)
+#   - \b          = word boundary
+#   - \x{NNNN}    = Unicode code point
+#   - (?:...)     = non-capturing group
+#
+# SEVERITY SCALE:
+#   - 0.95  Critical — near-certain malicious intent
+#   - 0.90  High     — very likely malicious
+#   - 0.85  Medium   — suspicious, may have legitimate uses
+#   - 0.70  Low      — informational, possible false positive
+#   - 0.60  Minimal  — weak signal, context-dependent
+#
+# ADDING A NEW RULE:
+#   1. Choose the appropriate category
+#   2. Add a rule with: id, description, pattern (and optionally severity)
+#   3. Run the compiler:  uv run python hooks/scripts/compile_config.py --mode shipped
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Global Defaults
+# -----------------------------------------------------------------------------
+# enabled: true          — all rules active unless individually toggled
+# caseInsensitive: true  — patterns ignore case by default
+# engine: pcre           — all patterns use Perl regex engine
+# -----------------------------------------------------------------------------
+defaults:
+  enabled: true
+  caseInsensitive: true
+  engine: pcre
+
+
+categories:
+
+  # ===========================================================================
+  # INSTRUCTION OVERRIDE
+  # ===========================================================================
+  # Detects attempts to hijack the agent by overriding its instructions —
+  # fake system prompts, delimiter markers, and direct instruction overrides.
+  # ===========================================================================
+  instruction_override:
+    defaults:
+      severity: 0.9
+    rules:
+
+      # --- Direct Instruction Override ---
+
+      - id: indirect-instruction-override
+        severity: 0.95
+        description: Ignore previous instructions
+        pattern: '(?i)\bignore\s+(all\s+)?(previous|prior|above)\s+(instructions?|prompts?|rules?)'
+
+      # --- Fake System Prompt ---
+
+      - id: indirect-system-prompt-injection
+        description: New system prompt injection
+        pattern: '(?i)\b(new|updated|revised|real)\s+system\s+prompt\b'
+
+      # --- Fake System Message Markers ---
+
+      - id: indirect-fake-system-markers
+        description: Fake system message markers
+        pattern: '(?i)\[/?system\]|\{/?system\}|</?system\s*>'
+
+      # --- Fake Delimiter Markers ---
+
+      - id: indirect-fake-delimiters
+        severity: 0.7
+        description: Fake delimiter markers
+        pattern: '(?i)={3,}\s*(end|new|begin|start)\s*(of\s+)?(prompt|instructions?|system)'
+
+
+  # ===========================================================================
+  # ROLE-PLAYING / DAN
+  # ===========================================================================
+  # Detects jailbreak attempts that try to make the agent adopt unrestricted
+  # personas — DAN, developer mode, evil twin, or safety bypass requests.
+  # ===========================================================================
+  role_playing_dan:
+    defaults:
+      severity: 0.9
+    rules:
+
+      # --- DAN Jailbreak ---
+
+      - id: indirect-dan-jailbreak
+        severity: 0.95
+        description: DAN jailbreak attempt
+        pattern: '(?i)\byou\s+are\s+(now\s+)?DAN\b'
+
+      # --- Restriction Bypass ---
+
+      - id: indirect-restriction-bypass
+        description: Restriction/safety bypass
+        pattern: '(?i)\b(without|ignore|bypass|disable|remove)\s+(your\s+)?(restrictions?|filters?|safeguards?|guardrails?)'
+
+      # --- Developer Mode ---
+
+      - id: indirect-developer-mode
+        description: Fake developer mode activation
+        pattern: '(?i)\bDEVELOPER\s+MODE\s+(ENABLED|ACTIVATED|ON)'
+
+      # --- Evil Twin ---
+
+      - id: indirect-evil-twin
+        description: Evil/unrestricted persona switch
+        pattern: '(?i)\b(evil|shadow|dark|unrestricted|uncensored)\s+(twin|version|mode|side|alter\s*ego)\b'
+
+
+  # ===========================================================================
+  # ENCODING / OBFUSCATION
+  # ===========================================================================
+  # Detects invisible Unicode characters, homoglyphs, and encoding-based
+  # obfuscation that hide malicious instructions between visible tokens.
+  # These are invisible to the LLM tokenizer and users alike.
+  #
+  # NOTE: Parallel rules exist in user-prompt-threats.yaml for user prompt
+  # scanning. If you update patterns here, check if the corresponding
+  # encoding-* rules need the same change.
+  # ===========================================================================
+  encoding_obfuscation:
+    defaults:
+      severity: 0.9
+    rules:
+
+      # --- Zero-Width Characters ---
+
+      - id: indirect-zero-width-chars
+        severity: 0.95
+        description: Zero-width/invisible Unicode
+        pattern: '[\x{200B}\x{200C}\x{200D}\x{FEFF}\x{00AD}]{2,}'
+
+      # --- Unicode Whitespace Manipulation ---
+
+      - id: indirect-unicode-whitespace
+        description: Unicode whitespace manipulation
+        pattern: '[\x{2060}\x{180E}\x{2000}-\x{200F}]{3,}'
+
+      # --- Cyrillic Homoglyphs ---
+
+      - id: indirect-cyrillic-homoglyphs
+        description: Cyrillic homoglyphs
+        pattern: '[\x{0430}\x{0435}\x{043E}\x{0440}\x{0441}\x{0443}\x{0445}\x{0456}]{3,}'
+
+      # --- Base64 Decode + Execute ---
+
+      - id: indirect-base64-execute
+        description: Base64 decode and execute
+        pattern: '(?i)\b(execute|follow|run)\s+(the\s+)?decoded\s+(base64|content|string)'
+
+      # --- Hex Escape Sequences ---
+
+      - id: indirect-hex-sequences
+        severity: 0.7
+        description: Hex escape sequences
+        pattern: '\\x[0-9a-fA-F]{2}(\\x[0-9a-fA-F]{2}){5,}'
+
+
+  # ===========================================================================
+  # CONTEXT MANIPULATION
+  # ===========================================================================
+  # Detects attempts to inject instructions via HTML/code comments, fake
+  # JSON system roles, false authority claims, and instruction block markers.
+  # ===========================================================================
+  context_manipulation:
+    defaults:
+      severity: 0.9
+    rules:
+
+      # --- HTML Comment Injection ---
+
+      - id: indirect-html-comment-injection
+        severity: 0.95
+        description: Instructions in HTML comments
+        pattern: '<!--\s*(ignore|disregard|override|system|instruction|prompt|forget)'
+
+      # --- Code Comment Injection ---
+
+      - id: indirect-code-comment-injection
+        description: Instructions in code comments
+        pattern: '/\*\s*(ignore|disregard|override|system|instruction|prompt|forget)'
+
+      # --- Fake System Role JSON ---
+
+      - id: indirect-fake-system-json
+        description: Fake system role JSON
+        pattern: '(?i)\{"role"\s*:\s*"system"'
+
+      # --- False Authority Claims ---
+
+      - id: indirect-false-authority
+        description: False AI company authority
+        pattern: '(?i)\b(anthropic|openai|github|copilot\s*team)\s+(says?|requires?|demands?|orders?|instructs?)\b'
+
+      # --- Fake Instruction Block Markers ---
+
+      - id: indirect-fake-inst-markers
+        description: Fake instruction block markers
+        pattern: '\[INST\]|\[/INST\]|\[SYS\]|\[/SYS\]'

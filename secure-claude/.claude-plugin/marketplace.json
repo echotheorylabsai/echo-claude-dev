@@ -1,0 +1,22 @@
+{
+  "name": "echo-theory-labs",
+  "owner": { "name": "Echo Theory Labs", "email": "team@echotheory.ai" },
+  "metadata": {
+    "description": "Echo Theory Labs plugins for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "secure-claude",
+      "source": "./",
+      "description": "Governance, audit, and tool-gating hooks for Claude Code",
+      "version": "1.0.0",
+      "author": { "name": "Echo Theory Labs" },
+      "license": "MIT",
+      "keywords": ["security", "governance", "audit", "hooks"],
+      "category": "security",
+      "tags": ["security", "governance"],
+      "strict": true
+    }
+  ]
+}

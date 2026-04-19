@@ -1,0 +1,256 @@
+# =============================================================================
+# Secure Claude — Prompt Injection Pattern Configuration
+# =============================================================================
+# Detects malicious or suspicious patterns in user prompts before they are
+# processed by the AI agent.  Each category groups related threat patterns
+# with a default severity that individual rules can override.
+#
+# STRUCTURE:
+#   categories.<name>.defaults   — default severity for the category
+#   categories.<name>.rules[]    — individual detection rules
+#     id          — unique rule identifier
+#     description — short human-readable label
+#     pattern     — POSIX-extended regex matched against the prompt text
+#     severity    — threat score 0.0–1.0 (optional; overrides category default)
+#
+# PATTERN SYNTAX:
+#   - [[:space:]]  = POSIX whitespace class
+#   - [[:alnum:]]  = POSIX alphanumeric class
+#   - (a|b)        = alternation
+#   - Patterns are matched case-insensitively by default (see global defaults)
+#
+# SEVERITY SCALE:
+#   - 0.95  Critical — near-certain malicious intent
+#   - 0.90  High     — very likely malicious
+#   - 0.85  Medium   — suspicious, may have legitimate uses
+#   - 0.70  Low      — informational, possible false positive
+#   - 0.60  Minimal  — weak signal, context-dependent
+#
+# ADDING A NEW RULE:
+#   1. Choose the appropriate category
+#   2. Add a rule with: id, description, pattern (and optionally severity)
+#   3. Run the validation script:  scripts/validate-plugin.sh
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Global Defaults
+# -----------------------------------------------------------------------------
+# enabled: true          — all rules active unless individually toggled
+# caseInsensitive: true  — patterns ignore case by default
+# -----------------------------------------------------------------------------
+defaults:
+  enabled: true
+  caseInsensitive: true
+
+
+categories:
+
+  # ===========================================================================
+  # DATA EXFILTRATION
+  # ===========================================================================
+  # Detects attempts to extract, transfer, or leak sensitive data outside
+  # the expected workflow — bulk sends, uploads, exports, and HTTP POSTs.
+  # ===========================================================================
+  data_exfiltration:
+    defaults:
+      severity: 0.85
+    rules:
+
+      # --- Bulk Data Transfer ---
+
+      - id: data-exfiltration-bulk-send
+        description: Bulk data transfer
+        pattern: 'send[[:space:]]+(all|every|entire)[[:space:]].*(data|records|files|credentials|secrets)[[:space:]]+to[[:space:]]+'
+
+      - id: data-exfiltration-explicit-exfiltration
+        severity: 0.95                          # near-certain malicious intent
+        description: Explicit exfiltration intent
+        pattern: '(exfiltrat(e|ion)|leak|dump)[[:space:]].*(data|records|credentials|secrets)'
+
+      # --- External / Third-Party Export ---
+
+      - id: data-exfiltration-external-export
+        severity: 0.9
+        description: External export
+        pattern: 'export[[:space:]].*[[:space:]]+to[[:space:]]+(external|outside|third[_-]?party)'
+
+      # --- HTTP-Based Exfiltration ---
+
+      - id: data-exfiltration-http-post
+        severity: 0.7                           # lower severity — curl -d has legitimate uses
+        description: HTTP POST with data
+        pattern: 'curl[[:space:]].*[[:space:]]+-d[[:space:]]+'
+
+      # --- Sensitive Upload ---
+
+      - id: data-exfiltration-sensitive-upload
+        severity: 0.95                          # near-certain malicious intent
+        description: Sensitive upload
+        pattern: 'upload[[:space:]].*[[:space:]]+(credentials|secrets|keys|user[[:space:]]+data|database)'
+
+
+  # ===========================================================================
+  # PRIVILEGE ESCALATION
+  # ===========================================================================
+  # Detects attempts to gain elevated permissions — sudo, root access,
+  # world-writable file modes, or adding users to admin groups.
+  # ===========================================================================
+  privilege_escalation:
+    defaults:
+      severity: 0.8
+    rules:
+
+      # --- Elevated Privilege Requests ---
+
+      - id: privilege-escalation-elevated-privileges
+        description: Elevated privileges
+        pattern: '(sudo|as[[:space:]]+root|admin[[:space:]]+access|runas[[:space:]]+/user)'
+
+      # --- Dangerous File Permissions ---
+
+      - id: privilege-escalation-world-writable
+        severity: 0.9                           # world-writable is almost never appropriate
+        description: World-writable permissions
+        pattern: 'chmod[[:space:]]+777'
+
+      # --- Admin Group Manipulation ---
+
+      - id: privilege-escalation-admin-access
+        severity: 0.95
+        description: Adding admin access
+        pattern: 'add[[:space:]]+.*[[:space:]]+(sudoers|administrators)'
+
+
+  # ===========================================================================
+  # SYSTEM DESTRUCTION
+  # ===========================================================================
+  # Detects commands or intent to destroy data at scale — recursive deletes,
+  # database drops/truncates, and mass wipe operations.
+  # ===========================================================================
+  system_destruction:
+    defaults:
+      severity: 0.9
+    rules:
+
+      # --- Destructive Shell Commands ---
+
+      - id: system-destruction-destructive-command
+        severity: 0.95
+        description: Destructive command
+        pattern: '(rm[[:space:]]+-rf[[:space:]]+/|del[[:space:]]+/[sq]|format[[:space:]]+c:)'
+
+      # --- Database Destruction ---
+
+      - id: system-destruction-database-destruction
+        description: Database destruction
+        pattern: '(drop[[:space:]]+database|truncate[[:space:]]+table|delete[[:space:]]+from[[:space:]]+[[:alnum:]_]+[[:space:]]*(;|[[:space:]]*$))'
+
+      # --- Mass Deletion Intent ---
+
+      - id: system-destruction-mass-deletion
+        description: Mass deletion
+        pattern: 'wipe[[:space:]]+(all|entire|every)'
+
+
+  # ===========================================================================
+  # PROMPT INJECTION
+  # ===========================================================================
+  # Detects classic prompt injection techniques — instruction overrides,
+  # role reassignment, and fake system prompt prefixes.
+  # ===========================================================================
+  prompt_injection:
+    defaults:
+      severity: 0.7
+    rules:
+
+      # --- Instruction Override ---
+
+      - id: prompt-injection-instruction-override
+        severity: 0.9                           # high confidence — direct override attempt
+        description: Instruction override
+        pattern: 'ignore[[:space:]]+(previous|above|all)[[:space:]]+(instructions?|rules?|prompts?)'
+
+      # --- Role Reassignment ---
+
+      - id: prompt-injection-role-reassignment
+        description: Role reassignment
+        pattern: 'you[[:space:]]+are[[:space:]]+now[[:space:]]+(a|an)[[:space:]]+(assistant|ai|bot|system|expert|language[[:space:]]+model)'
+
+      # --- System Prompt Prefix ---
+
+      - id: prompt-injection-system-prefix
+        severity: 0.6                           # weak signal — may appear in normal discussion
+        description: System prompt injection
+        pattern: '(^|[[:space:]])system[[:space:]]*:[[:space:]]*you[[:space:]]+are'
+
+
+  # ===========================================================================
+  # CREDENTIAL EXPOSURE
+  # ===========================================================================
+  # Detects hardcoded credentials, API keys, AWS access keys, and other
+  # secrets that should never appear in plain text.
+  # ===========================================================================
+  credential_exposure:
+    defaults:
+      severity: 0.9
+    rules:
+
+      # --- Hardcoded Credentials ---
+
+      - id: credential-exposure-hardcoded-credential
+        description: Possible hardcoded credential
+        pattern: >-
+          (api[_-]?key|secret[_-]?key|password|token)[[:space:]]*[:=][[:space:]]*['"]?[[:alnum:]_]{8,}
+
+      # --- AWS Key Exposure ---
+
+      - id: credential-exposure-aws-key
+        severity: 0.95                          # AWS keys are high-value targets
+        description: AWS key exposure
+        pattern: '(aws_access_key|AKIA[0-9A-Z]{16})'
+
+
+  # ===========================================================================
+  # ENCODING OBFUSCATION
+  # ===========================================================================
+  # Detects invisible Unicode characters, homoglyphs, and encoding-based
+  # obfuscation in user prompts. These require the PCRE engine (perl) for
+  # Unicode character class support. Gracefully skipped if perl unavailable.
+  #
+  # NOTE: Parallel rules exist in indirect-injection-patterns.yaml for
+  # post-tool-use scanning. If you update patterns here, check if the
+  # corresponding indirect-* rules need the same change.
+  # ===========================================================================
+  encoding_obfuscation:
+    defaults:
+      severity: 0.9
+    rules:
+
+      # --- Zero-Width Characters ---
+
+      - id: encoding-zero-width-chars
+        severity: 0.95
+        description: Zero-width/invisible Unicode
+        engine: pcre
+        pattern: '[\x{200B}\x{200C}\x{200D}\x{FEFF}\x{00AD}]{2,}'
+
+      # --- Cyrillic Homoglyphs ---
+
+      - id: encoding-cyrillic-homoglyphs
+        description: Cyrillic homoglyphs
+        engine: pcre
+        pattern: '[\x{0430}\x{0435}\x{043E}\x{0440}\x{0441}\x{0443}\x{0445}\x{0456}]{3,}'
+
+      # --- Base64 Decode + Execute ---
+
+      - id: encoding-base64-execute
+        description: Base64 decode and execute
+        pattern: '(execute|follow|run)[[:space:]]+(the[[:space:]]+)?decoded[[:space:]]+(base64|content|string)'
+
+      # --- Hex Escape Sequences ---
+
+      - id: encoding-hex-sequences
+        severity: 0.85
+        description: Hex escape sequences
+        pattern: '\\x[0-9a-fA-F]{2}(\\x[0-9a-fA-F]{2}){5,}'
