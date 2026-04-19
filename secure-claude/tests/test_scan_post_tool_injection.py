@@ -34,7 +34,7 @@ def _run(payload, home, plugin_root=PLUGIN_ROOT, *, skip=False):
 
 
 def _log(home: Path, cwd: Path) -> Path:
-    return home / "progress-ai/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
+    return home / "echo-theory-labs/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
 
 
 def _pt(**kwargs):

@@ -34,7 +34,7 @@ def _run(stdin_obj: dict, home: Path, *, skip: bool = False):
 
 
 def _log_path(home: Path, cwd: Path) -> Path:
-    return home / "progress-ai/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
+    return home / "echo-theory-labs/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
 
 
 def _write_log(home: Path, cwd: Path, records: list[dict]) -> Path:

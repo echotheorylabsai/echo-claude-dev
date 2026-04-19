@@ -23,7 +23,7 @@ def _env(home: Path, *, skip: bool = False) -> dict:
 
 
 def _log_path(home: Path, cwd: Path) -> Path:
-    return home / "progress-ai/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
+    return home / "echo-theory-labs/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
 
 
 def test_session_start_writes_jsonl_record(tmp_path):

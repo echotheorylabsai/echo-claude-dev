@@ -25,7 +25,7 @@ search across the whole JSON record (not just rendered fields).
 ## File location
 
 ```text
-~/progress-ai/secure-claude/logs/<project>/governance-audit.jsonl
+~/echo-theory-labs/secure-claude/logs/<project>/governance-audit.jsonl
 ```
 
 `<project>` is the git repo basename, sanitized to `[A-Za-z0-9_.-]` and truncated

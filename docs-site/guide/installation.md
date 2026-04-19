@@ -54,7 +54,7 @@ uv sync
 Start a Claude Code session and check the audit log:
 
 ```bash
-tail -f ~/progress-ai/secure-claude/logs/<your-project>/governance-audit.jsonl
+tail -f ~/echo-theory-labs/secure-claude/logs/<your-project>/governance-audit.jsonl
 ```
 
 A `sessionStart` event confirms the plugin is active.

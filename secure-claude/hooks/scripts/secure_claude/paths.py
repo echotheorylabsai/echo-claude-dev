@@ -45,7 +45,7 @@ def project_name(cwd: str) -> str:
 
 
 def log_dir(cwd: str) -> Path:
-    return _home() / "progress-ai" / "secure-claude" / "logs" / project_name(cwd)
+    return _home() / "echo-theory-labs" / "secure-claude" / "logs" / project_name(cwd)
 
 
 def log_file(cwd: str) -> Path:

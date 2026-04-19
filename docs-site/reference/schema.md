@@ -3,7 +3,7 @@
 All events are appended to:
 
 ```text
-~/progress-ai/secure-claude/logs/<project>/governance-audit.jsonl
+~/echo-theory-labs/secure-claude/logs/<project>/governance-audit.jsonl
 ```
 
 `<project>` is the git repo root basename (or working-dir basename if not in a git repo),
