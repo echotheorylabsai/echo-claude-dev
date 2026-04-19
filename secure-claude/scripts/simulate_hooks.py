@@ -61,7 +61,7 @@ class Harness:
         self.project_name = _resolve_project_name(self.cwd)
         self.log_file = (
             tmp_home
-            / "progress-ai"
+            / "echo-theory-labs"
             / "secure-claude"
             / "logs"
             / self.project_name

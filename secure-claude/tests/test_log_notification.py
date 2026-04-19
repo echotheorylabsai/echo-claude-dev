@@ -34,7 +34,7 @@ def _run(payload, home, *, skip=False):
 
 
 def _last_rec(home, cwd):
-    lf = home / "progress-ai/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
+    lf = home / "echo-theory-labs/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
     return json.loads(lf.read_text().strip().splitlines()[-1])
 
 
@@ -71,5 +71,5 @@ def test_missing_type_defaults_to_unknown(tmp_path):
 def test_skip_flag_no_log(tmp_path):
     r = _run({"cwd": str(tmp_path), "type": "info", "message": "x"}, tmp_path, skip=True)
     assert r.returncode == 0
-    lf = tmp_path / "progress-ai/secure-claude/logs" / tmp_path.name / "governance-audit.jsonl"
+    lf = tmp_path / "echo-theory-labs/secure-claude/logs" / tmp_path.name / "governance-audit.jsonl"
     assert not lf.exists()

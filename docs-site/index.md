@@ -42,7 +42,7 @@ claude plugin install secure-claude@echo-theory-labs
 ```
 
 That's it. Start a Claude Code session — every tool call and prompt is now audited at
-`~/progress-ai/secure-claude/logs/<project>/governance-audit.jsonl`.
+`~/echo-theory-labs/secure-claude/logs/<project>/governance-audit.jsonl`.
 
 ## Who is this for?
 

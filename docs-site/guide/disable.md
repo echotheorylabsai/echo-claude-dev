@@ -22,7 +22,7 @@ the plugin active.
 claude plugin uninstall secure-claude
 ```
 
-Audit logs at `~/progress-ai/secure-claude/logs/` are preserved on uninstall — delete
+Audit logs at `~/echo-theory-labs/secure-claude/logs/` are preserved on uninstall — delete
 them manually if you want them gone.
 
 ## Local overrides directory

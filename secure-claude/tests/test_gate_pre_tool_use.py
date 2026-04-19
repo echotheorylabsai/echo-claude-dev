@@ -34,7 +34,7 @@ def _run(payload, home, plugin_root=PLUGIN_ROOT, *, skip=False):
 
 
 def _log_recs(home: Path, cwd: Path) -> list[dict]:
-    lf = home / "progress-ai/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
+    lf = home / "echo-theory-labs/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
     if not lf.exists():
         return []
     return [json.loads(line) for line in lf.read_text().strip().splitlines() if line.strip()]
@@ -217,7 +217,7 @@ def test_skip_flag_bypasses_gate(tmp_path):
     assert r.returncode == 0
     assert r.stdout.strip() == ""  # no deny JSON
     # Skip must bypass logging entirely — no log file created
-    lf = tmp_path / "progress-ai/secure-claude/logs" / tmp_path.name / "governance-audit.jsonl"
+    lf = tmp_path / "echo-theory-labs/secure-claude/logs" / tmp_path.name / "governance-audit.jsonl"
     assert not lf.exists()
 
 

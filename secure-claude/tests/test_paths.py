@@ -18,7 +18,7 @@ def test_log_file_path(monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(tmp_path))
     lf = paths.log_file(cwd=str(tmp_path))
     assert lf.name == "governance-audit.jsonl"
-    assert "progress-ai/secure-claude/logs" in str(lf)
+    assert "echo-theory-labs/secure-claude/logs" in str(lf)
 
 
 def test_project_name_from_git(tmp_path):

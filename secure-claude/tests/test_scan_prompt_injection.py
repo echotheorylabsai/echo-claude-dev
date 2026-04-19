@@ -34,7 +34,7 @@ def _run(payload: dict, home: Path, plugin_root: Path = PLUGIN_ROOT, *, skip: bo
 
 
 def _log(home: Path, cwd: Path) -> Path:
-    return home / "progress-ai/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
+    return home / "echo-theory-labs/secure-claude/logs" / cwd.name / "governance-audit.jsonl"
 
 
 def test_clean_prompt_exits_0_logs_promptScanned(tmp_path):

@@ -50,7 +50,7 @@ flowchart LR
     EP --> PKG[secure_claude package<br/>paths · io_utils · logging_utils<br/>config_loader · scanner · audit_writer]
     PKG --> CFG[hooks/config/generated/*.json<br/>compiled rule packs]
     PKG --> OVR["~/.config/secure-claude/<br/>overrides.yaml (optional)"]
-    PKG --> LOG["~/progress-ai/secure-claude/<br/>logs/&lt;project&gt;/governance-audit.jsonl"]
+    PKG --> LOG["~/echo-theory-labs/secure-claude/<br/>logs/&lt;project&gt;/governance-audit.jsonl"]
     LOG --> DASH[log-viewer/dashboard.html<br/>browser-side viewer]
 ```
 
@@ -186,7 +186,7 @@ uv run python hooks/scripts/compile_config.py --mode shipped --check
 All events are appended to:
 
 ```text
-~/progress-ai/secure-claude/logs/<project>/governance-audit.jsonl
+~/echo-theory-labs/secure-claude/logs/<project>/governance-audit.jsonl
 ```
 
 `<project>` = git repository root basename, or working directory basename if not in a git repo.

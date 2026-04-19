@@ -8,7 +8,7 @@ flowchart LR
     EP --> PKG[secure_claude package<br/>paths · io_utils · logging_utils<br/>config_loader · scanner · input_parser<br/>regex_engine · env]
     PKG --> CFG[hooks/config/generated/*.json<br/>compiled rule packs]
     PKG --> OVR["~/.config/secure-claude/<br/>overrides (optional)"]
-    PKG --> LOG["~/progress-ai/secure-claude/<br/>logs/&lt;project&gt;/governance-audit.jsonl"]
+    PKG --> LOG["~/echo-theory-labs/secure-claude/<br/>logs/&lt;project&gt;/governance-audit.jsonl"]
     LOG --> DASH[log-viewer/dashboard.html<br/>browser-side viewer]
 ```
 
