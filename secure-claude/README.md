@@ -4,6 +4,8 @@ Governance, audit, and tool-gating hooks for [Claude Code](https://code.claude.c
 
 Part of the **echo-theory-labs** marketplace.
 
+📖 **Full documentation:** <https://echotheorylabsai.github.io/echo-claude-dev/>
+
 ---
 
 ## Install
