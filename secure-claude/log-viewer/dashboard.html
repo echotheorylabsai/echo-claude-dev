@@ -797,7 +797,7 @@
       const dominant = Object.entries(b.counts).sort((a, b) => b[1] - a[1])[0];
       const color = (EVENT_COLORS[dominant[0]] || {}).bar || 'var(--text-muted)';
       const title = Object.entries(b.counts).map(([k, v]) => `${k}: ${v}`).join('\n');
-      return `<div class="timeline-bar" style="height:${height}px;background:${color}" title="${title}"></div>`;
+      return `<div class="timeline-bar" style="height:${height}px;background:${color}" title="${esc(title)}"></div>`;
     }).join('');
   }
 
@@ -814,7 +814,7 @@
       const pct = (d.count / maxVal) * 100;
       const color = colorFn(d.label);
       return `<div class="bar-row">
-        <div class="bar-label" title="${d.label}">${d.label}</div>
+        <div class="bar-label" title="${esc(d.label)}">${esc(d.label)}</div>
         <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
         <div class="bar-count" style="color:${color}">${d.count}</div>
       </div>`;
@@ -870,7 +870,7 @@
       .sort((a, b) => b[1].maxSev - a[1].maxSev)
       .map(([cat, info]) => `<div class="severity-row">
         <div class="severity-dot" style="background:${sevColor(info.maxSev)}"></div>
-        <div class="severity-label">${cat.replace(/_/g, ' ')}</div>
+        <div class="severity-label">${esc(cat.replace(/_/g, ' '))}</div>
         <div class="severity-value" style="color:${sevColor(info.maxSev)}">${info.count}× (${info.maxSev.toFixed(2)})</div>
       </div>`).join('')}</div>`;
   }
@@ -884,10 +884,10 @@
       .sort((a, b) => b[1] - a[1])
       .map(([event, count]) => {
         const active = activeFilters.has(event);
-        return `<button class="filter-chip ${active ? 'active' : ''}" data-event="${event}">${event}<span class="count">${count}</span></button>`;
+        return `<button class="filter-chip ${active ? 'active' : ''}" data-event="${esc(event)}">${esc(event)}<span class="count">${count}</span></button>`;
       }).join('');
     // Keep search input, replace chips
-    bar.innerHTML = `<input type="text" class="search-input" id="search-input" placeholder="Search events..." value="${searchQuery}">` + chips;
+    bar.innerHTML = `<input type="text" class="search-input" id="search-input" placeholder="Search events..." value="${esc(searchQuery)}">` + chips;
 
     // Re-bind
     const newSearch = bar.querySelector('.search-input');

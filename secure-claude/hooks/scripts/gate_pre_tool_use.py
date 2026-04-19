@@ -51,7 +51,10 @@ def _evaluate(tool_name: str, tool_input: dict, rules: list[dict]) -> tuple[dict
         except (CompileError, KeyError):
             continue
         if regex.search(value):
-            reason = rule.get("reason", "Blocked by governance policy").replace("{value}", value)
+            safe_value = value[:200]
+            reason = rule.get("reason", "Blocked by governance policy").replace(
+                "{value}", safe_value
+            )
             return rule, reason
     return None, ""
 

@@ -3,8 +3,16 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 from pathlib import Path
+
+_SAFE_NAME_RE = re.compile(r"[^A-Za-z0-9_.-]")
+
+
+def _sanitize(name: str) -> str:
+    cleaned = _SAFE_NAME_RE.sub("_", name).strip("._") or "unknown"
+    return cleaned[:128]
 
 
 def _home() -> Path:
@@ -30,10 +38,10 @@ def project_name(cwd: str) -> str:
             timeout=2,
         )
         if out.returncode == 0 and out.stdout.strip():
-            return Path(out.stdout.strip()).name
+            return _sanitize(Path(out.stdout.strip()).name)
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
-    return Path(cwd).name
+    return _sanitize(Path(cwd).name)
 
 
 def log_dir(cwd: str) -> Path:
